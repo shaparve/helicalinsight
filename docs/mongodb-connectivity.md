@@ -5,14 +5,14 @@ Helical Insight exposes MongoDB through its existing NoSQL data-source workflow.
 ## Prerequisites
 
 - MongoDB must be reachable from both Helical Insight and Apache Drill.
-- Apache Drill integration must be enabled. The current data-source list exposes MongoDB only when Drill is enabled.
+- Apache Drill must be configured and available for the NoSQL data-source provider.
 - Use a MongoDB account scoped to the required database and collections.
 
 ## Configure a connection
 
-1. Open **Data Sources** and select **Mongodb** under **No SQL & Big Data**.
-2. Select the `com.helicalinsight.nosql.mongo` driver.
-3. Enter a data-source name, MongoDB host, port (normally `27017`), database, and collection.
+1. Open **Data Sources** and select **Helical Mongodb** (`com.helical.mongodb.MongoJdbcDriver`).
+2. Select **NoSql Datasource** as the data-source provider. This routes connection testing and save through Helical Insight's MongoDB/Drill integration.
+3. Enter a data-source name, MongoDB host, port (normally `27017`), and database.
 4. For an authenticated deployment, enter the MongoDB username and password in their respective fields. Reserved characters in these credentials are URL-encoded when the MongoDB URI is built.
 5. In **Other Options**, optionally enter MongoDB URI options, beginning with `?`. For example:
 
@@ -34,20 +34,22 @@ Use placeholders only in documentation and tickets; never commit real credential
 
 ## Build and tests
 
-From the `server` directory, inspect the resolved driver dependency, run the Mongo connection tests, and package the affected modules:
+From the `server` directory, inspect the resolved driver dependency, run the focused tests, and package the application:
 
 ```bash
 mvn -pl adhoc dependency:tree -Dincludes=org.mongodb:mongo-java-driver
-mvn -pl adhoc -am -Dtest=MongoConnectionSupportTest -Dsurefire.failIfNoSpecifiedTests=false test
-mvn -pl adhoc -am -DskipTests package
+mvn -pl adhoc -am -Dtest=MongoConnectionSupportTest,NoSqlDataSourcePropertiesTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn clean package -DskipTests
 ```
 
-## Verification results
+For runtime prerequisites, WAR deployment, and Tomcat startup steps, follow the [backend run instructions](../server/README.md#running-the-backend).
 
-Verified with Eclipse Temurin `25.0.4.1` and Apache Maven `3.9.11`:
+## Verification status
+
+Previously recorded verification with Eclipse Temurin `25.0.4.1` and Apache Maven `3.9.11`:
 
 - Dependency tree: `BUILD SUCCESS`; `org.mongodb:mongo-java-driver:3.12.10:compile` resolves for `hi-adhoc`.
-- Focused test command: `BUILD SUCCESS`; 8 tests, 0 failures, 0 errors, 0 skipped. Tests cover URI generation, credential escaping, URI options, malformed configuration, and a bounded unreachable-local-server failure.
+- Focused Mongo connection tests: `BUILD SUCCESS`; 8 tests, 0 failures, 0 errors, 0 skipped. Tests cover URI generation, credential escaping, URI options, malformed configuration, and a bounded unreachable-local-server failure.
 - Package command: `BUILD SUCCESS` for `parent`, `hi-core`, `hi-cache`, and `hi-adhoc`.
 
-The unit tests do not require a live MongoDB server. A successful authenticated connection, invalid live credentials, and report use through Drill still need deployment-level verification against a MongoDB instance and enabled Drill service. The unavailable-server unit test uses loopback port `1`; it does not replace a live environment test. An existing relational connection was not exercised against a database server in this environment.
+The MongoDB-to-NoSQL-loader routing tests were added after that recorded run and still need to be executed. In the current workspace, Maven and Java are not installed or available on `PATH`, so the updated Java tests and build could not be rerun. The Docker engine is also unavailable. A successful authenticated connection, invalid live credentials, report use through Drill, and a live existing-database regression therefore still need deployment-level verification. The unavailable-server unit test uses loopback port `1`; it does not replace a live environment test.

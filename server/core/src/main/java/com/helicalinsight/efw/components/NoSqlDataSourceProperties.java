@@ -12,6 +12,9 @@ import com.helicalinsight.efw.utility.NoSqlUtils;
  *         Created  on 11/9/2017.
  */
 public class NoSqlDataSourceProperties extends TomcatJdbcDataSourceProperties {
+    private static final String MONGO_JDBC_DRIVER = "com.helical.mongodb.MongoJdbcDriver";
+    private static final String MONGO_LOADER = "com.helicalinsight.nosql.mongo";
+
     public synchronized static String writeNoSqlDataSource(NoSqlProperties connection, int theId, JsonObject formData, String mode) {
         writeTomcatJdbcDataSourceType(connection, theId, formData, mode);
         formData.addProperty("mode",mode);
@@ -49,6 +52,9 @@ public class NoSqlDataSourceProperties extends TomcatJdbcDataSourceProperties {
         String subType = GsonUtility.optString(formData, "subType");
         String driverClassName = GsonUtility.optString(formData,"driverName");
         if (driverClassName != null && driverClassName.trim().length() > 0) {
+            if (MONGO_JDBC_DRIVER.equals(driverClassName)) {
+                return MONGO_LOADER;
+            }
             subType = driverClassName;
         }
         return subType;
