@@ -68,11 +68,13 @@ Helical Insight connects to virtually any modern data source through native conn
 | Apache Hive | Excel | Oracle Database | Apache Hive | Firebird SQL |
 | Presto | Google Sheets | SQL Server | YugabyteDB | Informix |
 | Trino | JSON | SQL Server (Legacy) | Snowflake | Custom JDBC Driver |
-| Snowflake | Parquet | IBM DB2 |  |  |
+| Snowflake | Parquet | IBM DB2 | MongoDB |  |
 | Teradata | TSV | SAP HANA |  |  |
 |  | Google Cloud Storage | SQLite |  |  |
 
 ![Introduction](docs/supported_datasources.png)
+
+See the [MongoDB connectivity guide](docs/mongodb-connectivity.md) for prerequisites, configuration, authentication, TLS options, and verification steps.
 
 # Helical Insight Comparison with Modern Open Source BI Tools
 

@@ -141,6 +141,8 @@ public class DrillCsvDataSourceCreator implements IComponent {
         try {
 
             result = doLogin(client);
+            // Do not return the login response if the storage request fails.
+            result = null;
 
             if ("POST".equalsIgnoreCase(httpMethod)) {
                 HttpPost postRequest = new HttpPost(resourceUrl);
