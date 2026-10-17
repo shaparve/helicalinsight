@@ -46,10 +46,10 @@ For runtime prerequisites, WAR deployment, and Tomcat startup steps, follow the 
 
 ## Verification status
 
-Previously recorded verification with Eclipse Temurin `25.0.4.1` and Apache Maven `3.9.11`:
+Verified on 2026-10-18 with Eclipse Temurin `25.0.4.1` and Apache Maven `3.9.16`:
 
-- Dependency tree: `BUILD SUCCESS`; `org.mongodb:mongo-java-driver:3.12.10:compile` resolves for `hi-adhoc`.
-- Focused Mongo connection tests: `BUILD SUCCESS`; 8 tests, 0 failures, 0 errors, 0 skipped. Tests cover URI generation, credential escaping, URI options, malformed configuration, and a bounded unreachable-local-server failure.
-- Package command: `BUILD SUCCESS` for `parent`, `hi-core`, `hi-cache`, and `hi-adhoc`.
+- Focused tests, run from `server` with `mvn -pl adhoc -am -Dtest=MongoConnectionSupportTest,NoSqlDataSourcePropertiesTest -Dsurefire.failIfNoSpecifiedTests=false test`: `BUILD SUCCESS`; 10 tests, 0 failures, 0 errors, 0 skipped. The 8 Mongo connection tests cover URI generation, credential escaping, URI options, malformed configuration, and a bounded unreachable-local-server failure. The 2 NoSQL loader tests verify MongoDB driver routing and preserve existing JDBC driver behavior.
+- Full package build, run from `server` with `mvn clean package -DskipTests`: `BUILD SUCCESS` across all 11 Maven modules, including test-source compilation and WAR packaging at `presentation/target/hi-ee-7.0.0.war`. Tests were skipped during this package command; the focused tests above were run separately.
+- Live connectivity: started a temporary MongoDB `7.0.45` container on `127.0.0.1:27018`. The server ping returned `1`, and Helical Insight's `MongoConnectionSupport.testConnection` returned `true`. The temporary container was removed after the check; Docker Desktop remains running.
 
-The MongoDB-to-NoSQL-loader routing tests were added after that recorded run and still need to be executed. In the current workspace, Maven and Java are not installed or available on `PATH`, so the updated Java tests and build could not be rerun. The Docker engine is also unavailable. A successful authenticated connection, invalid live credentials, report use through Drill, and a live existing-database regression therefore still need deployment-level verification. The unavailable-server unit test uses loopback port `1`; it does not replace a live environment test.
+Live authentication failure behavior, use of the connection through Apache Drill for an actual report, and regression against an existing deployed database were not exercised in this environment. The unit tests cover malformed connection settings and an unreachable MongoDB server, but do not replace those deployment-level checks.
